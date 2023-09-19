@@ -1,7 +1,9 @@
 ---
 title: "506hw2"
 author: "Manqing Lin"
-format: html
+format:
+  html:
+    embed-resources: true
 editor: visual
 ---
 
@@ -36,7 +38,7 @@ play_dice<-function(x){
       ttwin=ttwin+6
     }
 ## we lose the when we on a roll of 1, 3 or 5
-    ttwin=ttwin-result
+    ttwin=ttwin
   }
 ## return the total winnings or loses
   return(ttwin)
@@ -62,7 +64,7 @@ play_dice<-function(x){
 ## randomly generate a number between 1 to 6
     result<-sample(1:6, 1, replace=TRUE)
 ## use the built-in R function "ifelse" to define the win or lose for each dice
-    win<-ifelse(result==2|result==4|result==6,result,-result)
+    win<-ifelse(result==2|result==4|result==6,result,0)
 ## total win or lose will be the sum of the initial cost to play the game and the roll value of each dice
     ttwin=ttwin+win
   }
@@ -82,17 +84,23 @@ version3:
 #| code-summary: "Show the code"
 ## define a function call play_dice
 play_dice<-function(x){
-    result<-c()
+  ttwin<--2
+  result<-c()
+  
     for(i in 1:x){
       ## randomly generate a number between 1 to 6
       result[i]<-sample(1:6, 1, replace=TRUE)
     }
     roll_table<-table(result)
-    
-    return(roll_table)
+    rowval1<-as.numeric(names(roll_table))
+    rowval2<-as.numeric(roll_table)
+    dicenum<-ifelse(rowval1%%2==1,0,rowval1)
+    ttwin<-ttwin+sum(dicenum*rowval2)
+    return(ttwin)
 }
 
-play_dice(5)
+play_dice(3)
+play_dice(3000)
 
 ```
 
@@ -139,3 +147,7 @@ cars1<-subset(cars,fueltype=="Gasoline")
 
 lm(highwaympg~horsepower+torque+H+L+W,cars1)
 ```
+
+Since the estimated coefficient of horsepower is greater than 0, the horsepower is positively correlated to the highway mileage. On average, a unit increase in the horsepower is associated with an estimated of 0.0182 miles change in the highway mileage.
+
+##d
