@@ -18,7 +18,7 @@ version1:
 ## define a function call play_dice
 play_dice<-function(x){
 ## set an initial total win or loss as the cost to play the game
-  ttwin<--2*x
+  ttwin<--2
 ## run the loop in the range of 1 and number of dice to roll
   for(i in 1:x){
 ## randomly generate a number between 1 to 6
@@ -45,6 +45,97 @@ play_dice<-function(x){
 ## test the function with different input
 play_dice(3)
 play_dice(3000)
+
+```
+
+version2:
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+## define a function call play_dice
+play_dice<-function(x){
+## set an initial total win or loss as the cost to play the game
+  ttwin<--2
+## run the loop in the range of 1 and number of dice to roll
+  for(i in 1:x){
+## randomly generate a number between 1 to 6
+    result<-sample(1:6, 1, replace=TRUE)
+## use the built-in R function "ifelse" to define the win or lose for each dice
+    win<-ifelse(result==2|result==4|result==6,result,-result)
+## total win or lose will be the sum of the initial cost to play the game and the roll value of each dice
+    ttwin=ttwin+win
+  }
+## return the total win or lose
+  return(ttwin)
+}
+## test the function with different input
+play_dice(3)
+play_dice(3000)
+
+```
+
+version3:
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+## define a function call play_dice
+play_dice<-function(x){
+    result<-c()
+    for(i in 1:x){
+      ## randomly generate a number between 1 to 6
+      result[i]<-sample(1:6, 1, replace=TRUE)
+    }
+    roll_table<-table(result)
+    
+    return(roll_table)
+}
+
+play_dice(5)
+
+```
+
+version4:
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
 ```
 
 ## Problem2
+
+##a
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+library(readr)
+cars <- read_csv("~/Desktop/cars.csv",show_col_types = FALSE)
+##View(cars)
+
+names(cars)<-c("H","L","W","Driveline","EngineType","IfHybrid","#Gears","Transmission","citympg","fueltype","highwaympg","classification","ID","make","model year","year","horsepower","torque")
+
+
+```
+
+##b
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+cars1<-subset(cars,fueltype=="Gasoline")
+
+```
+
+##c
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+lm(highwaympg~horsepower+torque+H+L+W,cars1)
+```
