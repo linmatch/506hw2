@@ -1,0 +1,166 @@
+---
+title: "hw2"
+author: "Manqing Lin"
+format: pdf
+editor: visual
+---
+
+## Problem1
+
+##a
+
+version1:
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+## define a function call play_dice
+play_dice<-function(x){
+## set an initial total win or loss as the cost to play the game
+  ttwin<--2
+## run the loop in the range of 1 and number of dice to roll
+  for(i in 1:x){
+## randomly generate a number between 1 to 6
+    result<-sample(1:6, 1, replace=TRUE)
+## if the roll result is 2, we get $2
+    if(result==2){
+      ttwin=ttwin+2
+    }
+## if the roll result is 4, we get $4
+    if(result==4){
+      ttwin=ttwin+4
+    }
+## if the roll result is 6, we get $6
+    if(result==6){
+      ttwin=ttwin+6
+    }
+## we lose the when we on a roll of 1, 3 or 5
+    ttwin=ttwin
+  }
+## return the total winnings or loses
+  return(ttwin)
+}
+
+## test the function with different input
+play_dice(3)
+play_dice(3000)
+
+```
+
+version2:
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+## define a function call play_dice
+play_dice<-function(x){
+## set an initial total win or loss as the cost to play the game
+  ttwin<--2
+## run the loop in the range of 1 and number of dice to roll
+  for(i in 1:x){
+## randomly generate a number between 1 to 6
+    result<-sample(1:6, 1, replace=TRUE)
+## use the built-in R function "ifelse" to define the win or lose for each dice
+    win<-ifelse(result==2|result==4|result==6,result,0)
+## total win or lose will be the sum of the initial cost to play the game and the roll value of each dice
+    ttwin=ttwin+win
+  }
+## return the total win or lose
+  return(ttwin)
+}
+## test the function with different input
+play_dice(3)
+play_dice(3000)
+
+```
+
+version3:
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+## define a function call play_dice
+play_dice<-function(x){
+  ttwin<--2
+  result<-c()
+  
+    for(i in 1:x){
+      ## randomly generate a number between 1 to 6
+      result[i]<-sample(1:6, 1, replace=TRUE)
+    }
+    roll_table<-table(result)
+    rowval1<-as.numeric(names(roll_table))
+    rowval2<-as.numeric(roll_table)
+    dicenum<-ifelse(rowval1%%2==1,0,rowval1)
+    ttwin<-ttwin+sum(dicenum*rowval2)
+    return(ttwin)
+}
+
+play_dice(3)
+play_dice(3000)
+
+```
+
+version4:
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+```
+
+## Problem2
+
+##a
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+library(readr)
+cars <- read_csv("~/Desktop/cars.csv",show_col_types = FALSE)
+##View(cars)
+
+names(cars)<-c("H","L","W","Driveline","EngineType","IfHybrid","#Gears","Transmission","citympg","fueltype","highwaympg","classification","ID","make","model year","year","horsepower","torque")
+
+```
+
+##b
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+cars1<-subset(cars,fueltype=="Gasoline")
+
+```
+
+##c
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+mod1<-lm(highwaympg~horsepower+torque+H+L+W+year,cars1)
+summary(mod1)
+```
+
+Since the estimated coefficient of horsepower is greater than 0, the horsepower is positively correlated to the highway mileage. On average, a unit increase in the horsepower is associated with an estimated of 0.0182 miles change in the highway mileage.
+
+##d
+
+```{r}
+mod2<-lm(highwaympg~horsepower+torque+H+L+W+year+horsepower*torque,cars1)
+summary(mod2)
+interaction.plot(x.factor=cars1$horsepower, trace.factor = cars1$torque, response=cars1$highwaympg)
+```
+
+##e
+
+```{r}
+Y=matrix(cars1$highwaympg, ncol=1)
+X = cbind(rep(1,length(Y)),cars1$horsepower,cars1$torque,cars1$H,cars1$L,cars1$W,cars1$year)
+
+solve(t(X)%*%X, t(X)%*%Y)
+```
