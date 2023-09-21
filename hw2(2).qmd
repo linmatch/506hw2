@@ -151,9 +151,16 @@ Since the estimated coefficient of horsepower is greater than 0, the horsepower 
 ##d
 
 ```{r}
+install.packages("visreg")
+install.packages("sjPlot")
+library(visreg)
+library(sjPlot)
+```
+
+```{r}
 mod2<-lm(highwaympg~horsepower+torque+H+L+W+year+horsepower*torque,cars1)
 summary(mod2)
-interaction.plot(x.factor=cars1$horsepower, trace.factor = cars1$torque, response=cars1$highwaympg)
+plot_model(mod2, type="int",mdrt.values = "meansd")
 ```
 
 ##e
