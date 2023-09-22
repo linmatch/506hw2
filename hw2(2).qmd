@@ -7,7 +7,7 @@ editor: visual
 
 ## Problem1
 
-##a
+##a&b&c
 
 version1:
 
@@ -22,6 +22,7 @@ play_dice<-function(x){
 ## run the loop in the range of 1 and number of dice to roll
   for(i in 1:x){
 ## randomly generate a number between 1 to 6
+    set.seed(567)
     result<-sample(1:6, 1, replace=TRUE)
 ## if the roll result is 2, we get $2
     if(result==2){
@@ -60,9 +61,10 @@ play_dice<-function(x){
 ## run the loop in the range of 1 and number of dice to roll
   for(i in 1:x){
 ## randomly generate a number between 1 to 6
+    set.seed(567)
     result<-sample(1:6, 1, replace=TRUE)
 ## use the built-in R function "ifelse" to define the win or lose for each dice
-    win<-ifelse(result==2|result==4|result==6,result,0)
+    win<-ifelse(result%%2==0,result,0)
 ## total win or lose will be the sum of the initial cost to play the game and the roll value of each dice
     ttwin=ttwin+win
   }
@@ -87,6 +89,7 @@ play_dice<-function(x){
   
     for(i in 1:x){
       ## randomly generate a number between 1 to 6
+      set.seed(567)
       result[i]<-sample(1:6, 1, replace=TRUE)
     }
     roll_table<-table(result)
@@ -107,8 +110,37 @@ version4:
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
+play_dice<-function(){
+  
+  set.seed(567)
+  result<-sample(1:6, 1, replace=TRUE)
+  if(result%%2==0){
+    win<-result
+  }
+  else{
+      win<--2
+    }
+  return(win)
+}
+
+num<-3
+ttwin<-sapply(1:num, function(x)play_dice())
+sum(ttwin)
 
 ```
+
+##d
+
+```{r}
+install.packages("microbenchmark")
+library(microbenchmark)
+```
+
+```{r}
+microbenchmark(num_100=play_dice(100),num_10000=play_dice(10000))
+```
+
+The time used for play 10000 dice games is longer than the tine use for play 100 dice games. It does make sense since there is a loop in the "play_dice" function, and it will need to run 100 and 10000 times separately.
 
 ## Problem2
 
@@ -151,14 +183,7 @@ Since the estimated coefficient of horsepower is greater than 0, the horsepower 
 ##d
 
 ```{r}
-install.packages("visreg")
-install.packages("sjPlot")
-library(visreg)
-library(sjPlot)
-```
-
-```{r}
-mod2<-lm(highwaympg~horsepower+torque+H+L+W+year+horsepower*torque,cars1)
+mod2<-lm(highwaympg~horsepower*torque,cars1)
 summary(mod2)
 plot_model(mod2, type="int",mdrt.values = "meansd")
 ```
