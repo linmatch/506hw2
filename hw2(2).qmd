@@ -307,8 +307,13 @@ The time used for play 10000 dice games is longer than the tine use for play 100
 ##e
 
 ```{r}
-
+sim<-10000
+ttwin<-replicate(sim,play_dice1(3))
+mean(ttwin)
+hist(ttwin)
 ```
+
+The game is not fair. By running the dice game for 10000 times, the mean value the the total win or lose is around 3.97, which favored the players. Also, we can see from the graph that the distribution of the ttwin is skewed, therefore, the game is not fair.
 
 ## Problem2
 
