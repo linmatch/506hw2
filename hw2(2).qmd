@@ -1,28 +1,24 @@
 ---
 title: "hw2"
 author: "Manqing Lin"
-format: pdf
+format: html
 editor: visual
 ---
 
 ## Problem1
 
-##a&b&c
+##a&b
 
 version1:
 
 ```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-
-## define a function call play_dice
-play_dice<-function(x){
+## define a function call play_dice1
+play_dice1<-function(x){
 ## set an initial total win or loss as the cost to play the game
   ttwin<--2
 ## run the loop in the range of 1 and number of dice to roll
   for(i in 1:x){
 ## randomly generate a number between 1 to 6
-    set.seed(567)
     result<-sample(1:6, 1, replace=TRUE)
 ## if the roll result is 2, we get $2
     if(result==2){
@@ -44,24 +40,21 @@ play_dice<-function(x){
 }
 
 ## test the function with different input
-play_dice(3)
-play_dice(3000)
+play_dice1(3)
+play_dice1(3000)
 
 ```
 
 version2:
 
 ```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-## define a function call play_dice
-play_dice<-function(x){
+## define a function call play_dice2
+play_dice2<-function(x){
 ## set an initial total win or loss as the cost to play the game
   ttwin<--2
 ## run the loop in the range of 1 and number of dice to roll
   for(i in 1:x){
 ## randomly generate a number between 1 to 6
-    set.seed(567)
     result<-sample(1:6, 1, replace=TRUE)
 ## use the built-in R function "ifelse" to define the win or lose for each dice
     win<-ifelse(result%%2==0,result,0)
@@ -72,8 +65,150 @@ play_dice<-function(x){
   return(ttwin)
 }
 ## test the function with different input
-play_dice(3)
-play_dice(3000)
+play_dice2(3)
+play_dice2(3000)
+
+```
+
+version3:
+
+```{r}
+## define a function call play_dice3
+play_dice3<-function(x){
+  ##set an initial total win or loss as the cost to play the game
+  ttwin<--2
+  ##create an empty vector to store value
+  result<-c()
+  
+    for(i in 1:x){
+      ## randomly generate a number between 1 to 6
+      result[i]<-sample(1:6, 1, replace=TRUE)
+    }
+  ##collapse results into a single table
+    roll_table<-table(result)
+    ##get the value of roll
+    rowval1<-as.numeric(names(roll_table))
+    ##get the frequency of each roll
+    rowval2<-as.numeric(roll_table)
+    ##if the number of roll is 2, 4, or 6, we win the amount on the roll,         else we win 0.
+    dicenum<-ifelse(rowval1%%2==1,0,rowval1)
+    ##calculate the total win or lose by sum up the product of dice and its       frequency
+    ttwin<-ttwin+sum(dicenum*rowval2)
+    ##return total win or lose
+    return(ttwin)
+}
+
+## test the function with different input
+play_dice3(3)
+play_dice3(3000)
+
+```
+
+version4:
+
+```{r}
+##set a function call play_dice4 with a input "num" which is the number of dice to roll
+play_dice4<-function(num){
+  ## randomly generate a number between 1 to 6
+  result<-sample(1:6, 1, replace=TRUE)
+  ##if we dice 2, 4, or 6, the win value will be the amount of the roll
+  if(result%%2==0){
+    win<-result
+  }
+  ##if we dice 1, 3, or 5, the win value will be 0
+  else{
+      win<-0
+  }
+  ##return the win value
+  return(win)
+}
+
+##test the function with an input of 3
+num<-3
+##store all outcome of the dice
+dice<-sapply(1:num, function(num)play_dice4(1))
+##the total win or lose will be the sum of outcome minus the cost of playing the game
+ttwin<-sum(dice)-2
+##return total win or lose
+ttwin
+
+##test the function with an input of 3000
+num<-3000
+##store all outcome of the dice
+dice<-sapply(1:num, function(num)play_dice4(1))
+##the total win or lose will be the sum of outcome minus the cost of playing the game
+ttwin<-sum(dice)-2
+##return total win or lose
+ttwin
+
+```
+
+##c
+
+version1:
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+## define a function call play_dice1
+play_dice1<-function(x){
+## set an initial total win or loss as the cost to play the game
+  ttwin<--2
+## run the loop in the range of 1 and number of dice to roll
+  for(i in 1:x){
+## randomly generate a number between 1 to 6 and control the randomnization
+    set.seed(1234)
+    result<-sample(1:6, 1, replace=TRUE)
+## if the roll result is 2, we get $2
+    if(result==2){
+      ttwin=ttwin+2
+    }
+## if the roll result is 4, we get $4
+    if(result==4){
+      ttwin=ttwin+4
+    }
+## if the roll result is 6, we get $6
+    if(result==6){
+      ttwin=ttwin+6
+    }
+## we lose the when we on a roll of 1, 3 or 5
+    ttwin=ttwin
+  }
+## return the total winnings or loses
+  return(ttwin)
+}
+
+## test the function with different input
+play_dice1(3)
+play_dice1(3000)
+
+```
+
+version2:
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+## define a function call play_dice2
+play_dice2<-function(x){
+## set an initial total win or loss as the cost to play the game
+  ttwin<--2
+## run the loop in the range of 1 and number of dice to roll
+  for(i in 1:x){
+## randomly generate a number between 1 to 6 and control the randomnization
+    set.seed(1234)
+    result<-sample(1:6, 1, replace=TRUE)
+## use the built-in R function "ifelse" to define the win or lose for each dice
+    win<-ifelse(result%%2==0,result,0)
+## total win or lose will be the sum of the initial cost to play the game and the roll value of each dice
+    ttwin=ttwin+win
+  }
+## return the total win or lose
+  return(ttwin)
+}
+## test the function with different input
+play_dice2(3)
+play_dice2(3000)
 
 ```
 
@@ -82,27 +217,35 @@ version3:
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-## define a function call play_dice
-play_dice<-function(x){
+## define a function call play_dice3
+play_dice3<-function(x){
+  ##set an initial total win or loss as the cost to play the game
   ttwin<--2
+  ##create an empty vector to store value
   result<-c()
   
     for(i in 1:x){
-      ## randomly generate a number between 1 to 6
-      set.seed(567)
+      ## randomly generate a number between 1 to 6 and control the randomnization
+      set.seed(1234)
       result[i]<-sample(1:6, 1, replace=TRUE)
     }
+  ##collapse results into a single table
     roll_table<-table(result)
+    ##get the value of roll
     rowval1<-as.numeric(names(roll_table))
+    ##get the frequency of each roll
     rowval2<-as.numeric(roll_table)
+    ##if the number of roll is 2, 4, or 6, we win the amount on the roll,         else we win 0.
     dicenum<-ifelse(rowval1%%2==1,0,rowval1)
+    ##calculate the total win or lose by sum up the product of dice and its       frequency
     ttwin<-ttwin+sum(dicenum*rowval2)
+    ##return total win or lose
     return(ttwin)
 }
 
-play_dice(3)
-play_dice(3000)
-
+## test the function with different input
+play_dice3(3)
+play_dice3(3000)
 ```
 
 version4:
@@ -110,22 +253,41 @@ version4:
 ```{r}
 #| code-fold: true
 #| code-summary: "Show the code"
-play_dice<-function(){
-  
-  set.seed(567)
+##set a function call play_dice4 with a input "num" which is the number of dice to roll
+play_dice4<-function(num){
+  ## randomly generate a number between 1 to 6 and control the    randomnization
+  set.seed(1234)
   result<-sample(1:6, 1, replace=TRUE)
+  ##if we dice 2, 4, or 6, the win value will be the amount of the roll
   if(result%%2==0){
     win<-result
   }
+  ##if we dice 1, 3, or 5, the win value will be 0
   else{
-      win<--2
-    }
+      win<-0
+  }
+  ##return the win value
   return(win)
 }
 
+##test the function with an input of 3
 num<-3
-ttwin<-sapply(1:num, function(x)play_dice())
-sum(ttwin)
+##store all outcome of the dice
+dice<-sapply(1:num, function(num)play_dice4(1))
+##the total win or lose will be the sum of outcome minus the cost of playing the game
+ttwin<-sum(dice)-2
+##return total win or lose
+ttwin
+
+##test the function with an input of 3000
+num<-3000
+##store all outcome of the dice
+dice<-sapply(1:num, function(num)play_dice4(1))
+##the total win or lose will be the sum of outcome minus the cost of playing the game
+ttwin<-sum(dice)-2
+##return total win or lose
+ttwin
+
 
 ```
 
@@ -137,19 +299,22 @@ library(microbenchmark)
 ```
 
 ```{r}
-microbenchmark(num_100=play_dice(100),num_10000=play_dice(10000))
+microbenchmark(num_100=play_dice1(100),num_10000=play_dice1(10000))
 ```
 
 The time used for play 10000 dice games is longer than the tine use for play 100 dice games. It does make sense since there is a loop in the "play_dice" function, and it will need to run 100 and 10000 times separately.
+
+##e
+
+```{r}
+
+```
 
 ## Problem2
 
 ##a
 
 ```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-
 library(readr)
 cars <- read_csv("~/Desktop/cars.csv",show_col_types = FALSE)
 ##View(cars)
@@ -161,9 +326,6 @@ names(cars)<-c("H","L","W","Driveline","EngineType","IfHybrid","#Gears","Transmi
 ##b
 
 ```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-
 cars1<-subset(cars,fueltype=="Gasoline")
 
 ```
@@ -171,9 +333,6 @@ cars1<-subset(cars,fueltype=="Gasoline")
 ##c
 
 ```{r}
-#| code-fold: true
-#| code-summary: "Show the code"
-
 mod1<-lm(highwaympg~horsepower+torque+H+L+W+year,cars1)
 summary(mod1)
 ```
