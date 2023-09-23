@@ -342,7 +342,7 @@ mod1<-lm(highwaympg~horsepower+torque+H+L+W+year,cars1)
 summary(mod1)
 ```
 
-Since the estimated coefficient of horsepower is greater than 0, the horsepower is positively correlated to the highway mileage. On average, a unit increase in the horsepower is associated with an estimated of 0.0182 miles change in the highway mileage.
+Since the estimated coefficient of horsepower is greater than 0, the horsepower is positively correlated to the highway mileage. On average, a unit increase in the horsepower is associated with an estimated of 0.0165 miles change in the highway mileage.
 
 ##d
 
@@ -359,4 +359,247 @@ Y=matrix(cars1$highwaympg, ncol=1)
 X = cbind(rep(1,length(Y)),cars1$horsepower,cars1$torque,cars1$H,cars1$L,cars1$W,cars1$year)
 
 solve(t(X)%*%X, t(X)%*%Y)
+```
+
+## Problem3
+
+##a
+
+``` stata
+import delimited /Users/linmatch/Desktop/cars.csv, clear
+save /Users/linmatch/Desktop/cars.csv, replace
+use /Users/linmatch/Desktop/cars.csv, clear
+
+rename(dimensionsheight dimensionslength dimensionswidth 
+engineinformationdriveline engineinformationenginetype 
+engineinformationhybrid engineinformationnumberofforward
+engineinformationtransmission fuelinformationcitympg fuelinformationfueltype
+fuelinformationhighwaympg identificationclassification identificationid
+identificationmake identificationmodelyear identificationyear 
+engineinformationenginestatistic v18)(H L W Driveline EngineType
+IfHybrid numGears Transmission citympg fueltype highwaympg classification ID make modelyear year horsepower torque)
+```
+
+##b
+
+``` stata
+keep if fueltype=="Gasoline"
+```
+
+##c
+
+``` stata
+. regress highwaympg horsepower torque H W L year
+
+      Source |       SS           df       MS      Number of obs   =     4,591
+-------------+----------------------------------   F(6, 4584)      =    549.28
+       Model |  69889.2409         6  11648.2068   Prob > F        =    0.0000
+    Residual |  97209.7267     4,584  21.2063104   R-squared       =    0.4183
+-------------+----------------------------------   Adj R-squared   =    0.4175
+       Total |  167098.968     4,590  36.4050038   Root MSE        =     4.605
+
+------------------------------------------------------------------------------
+  highwaympg | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+  horsepower |   .0165738   .0022769     7.28   0.000     .0121101    .0210376
+      torque |  -.0510155   .0022019   -23.17   0.000    -.0553323   -.0466987
+           H |   .0098205   .0011235     8.74   0.000     .0076179    .0120231
+           W |  -.0004419   .0009041    -0.49   0.625    -.0022143    .0013306
+           L |   .0016162   .0008831     1.83   0.067    -.0001151    .0033475
+        year |   .8145434   .0864317     9.42   0.000     .6450956    .9839912
+       _cons |  -1605.366   173.7969    -9.24   0.000    -1946.092   -1264.641
+------------------------------------------------------------------------------
+
+. 
+```
+
+Since the estimated coefficient of horsepower is greater than 0, the horsepower is positively correlated to the highway mileage. On average, a unit increase in the horsepower is associated with an estimated of 0.0182 miles change in the highway mileage.
+
+##d
+
+``` stata
+.regress highwaympg c.horsepower##c.torque
+
+      Source |       SS           df       MS      Number of obs   =     4,591
+-------------+----------------------------------   F(3, 4587)      =   1342.74
+       Model |  78130.6033         3  26043.5344   Prob > F        =    0.0000
+    Residual |  88968.3643     4,587  19.3957629   R-squared       =    0.4676
+-------------+----------------------------------   Adj R-squared   =    0.4672
+       Total |  167098.968     4,590  36.4050038   Root MSE        =    4.4041
+
+-------------------------------------------------------------------------------
+   highwaympg | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+--------------+----------------------------------------------------------------
+   horsepower |  -.0144854   .0024904    -5.82   0.000    -.0193678    -.009603
+       torque |  -.0910078   .0024836   -36.64   0.000    -.0958768   -.0861389
+              |
+ c.horsepower#|
+     c.torque |    .000116   4.66e-06    24.87   0.000     .0001068    .0001251
+              |
+        _cons |   43.78689   .4231077   103.49   0.000      42.9574    44.61639
+-------------------------------------------------------------------------------
+```
+
+``` stata
+. summarize torque
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+      torque |      4,591    267.2196    101.3269         98        774
+
+. return list
+
+scalars:
+                  r(N) =  4591
+              r(sum_w) =  4591
+               r(mean) =  267.2195600087127
+                r(Var) =  10267.13261078676
+                 r(sd) =  101.3268602631442
+                r(min) =  98
+                r(max) =  774
+                r(sum) =  1226805
+```
+
+``` stata
+. summarize horsepower
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+  horsepower |      4,591    267.4659    97.43199        100        638
+```
+
+``` stata
+. global torq1=round(r(mean)+r(sd),0.1)
+
+. global torq2=round(r(mean),0.1)
+
+. global torq3=round(r(mean)-r(sd),0.1)
+```
+
+``` stata
+. margins, at(horsepower=(100(48)638) torque=($torq1 $torq2 $torq3))
+
+Adjusted predictions                                     Number of obs = 4,591
+Model VCE: OLS
+
+Expression: Linear prediction, predict()
+1._at:  horsepower =   100
+        torque     = 368.5
+2._at:  horsepower =   100
+        torque     = 267.2
+3._at:  horsepower =   100
+        torque     = 165.9
+4._at:  horsepower =   148
+        torque     = 368.5
+5._at:  horsepower =   148
+        torque     = 267.2
+6._at:  horsepower =   148
+        torque     = 165.9
+7._at:  horsepower =   196
+        torque     = 368.5
+8._at:  horsepower =   196
+        torque     = 267.2
+9._at:  horsepower =   196
+        torque     = 165.9
+10._at: horsepower =   244
+        torque     = 368.5
+11._at: horsepower =   244
+        torque     = 267.2
+12._at: horsepower =   244
+        torque     = 165.9
+13._at: horsepower =   292
+        torque     = 368.5
+14._at: horsepower =   292
+        torque     = 267.2
+15._at: horsepower =   292
+        torque     = 165.9
+16._at: horsepower =   340
+        torque     = 368.5
+17._at: horsepower =   340
+        torque     = 267.2
+18._at: horsepower =   340
+        torque     = 165.9
+19._at: horsepower =   388
+        torque     = 368.5
+20._at: horsepower =   388
+        torque     = 267.2
+21._at: horsepower =   388
+        torque     = 165.9
+22._at: horsepower =   436
+        torque     = 368.5
+23._at: horsepower =   436
+        torque     = 267.2
+24._at: horsepower =   436
+        torque     = 165.9
+25._at: horsepower =   484
+        torque     = 368.5
+26._at: horsepower =   484
+        torque     = 267.2
+27._at: horsepower =   484
+        torque     = 165.9
+28._at: horsepower =   532
+        torque     = 368.5
+29._at: horsepower =   532
+        torque     = 267.2
+30._at: horsepower =   532
+        torque     = 165.9
+31._at: horsepower =   580
+        torque     = 368.5
+32._at: horsepower =   580
+        torque     = 267.2
+33._at: horsepower =   580
+        torque     = 165.9
+34._at: horsepower =   628
+        torque     = 368.5
+35._at: horsepower =   628
+        torque     = 267.2
+36._at: horsepower =   628
+        torque     = 165.9
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         _at |
+          1  |   13.07557   .5638163    23.19   0.000     11.97022    14.18092
+          2  |   21.11986   .3561963    59.29   0.000     20.42154    21.81817
+          3  |   29.16415   .1972072   147.89   0.000     28.77752    29.55077
+          4  |    14.4316   .4640597    31.10   0.000     13.52182    15.34138
+          5  |   21.91198   .2592897    84.51   0.000     21.40365    22.42031
+          6  |   29.39236   .1183213   248.41   0.000      29.1604    29.62433
+          7  |   15.78764   .3653279    43.21   0.000     15.07142    16.50385
+          8  |   22.70411   .1664448   136.41   0.000     22.37779    23.03042
+          9  |   29.62058   .1036838   285.68   0.000     29.41731    29.82385
+         10  |   17.14367   .2687527    63.79   0.000     16.61678    17.67055
+         11  |   23.49623   .0910717   258.00   0.000     23.31769    23.67478
+         12  |    29.8488     .17071   174.85   0.000     29.51412    30.18347
+         13  |    18.4997   .1778823   104.00   0.000     18.15097    18.84844
+         14  |   24.28836    .094877   256.00   0.000     24.10235    24.47436
+         15  |   30.07701   .2630108   114.36   0.000     29.56139    30.59264
+         16  |   19.85573   .1081973   183.51   0.000     19.64361    20.06785
+         17  |   25.08048   .1727039   145.22   0.000      24.7419    25.41906
+         18  |   30.30523     .36173    83.78   0.000     29.59607     31.0144
+         19  |   21.21177   .1114528   190.32   0.000     20.99326    21.43027
+         20  |   25.87261   .2660246    97.26   0.000     25.35107    26.39414
+         21  |   30.53345   .4627782    65.98   0.000     29.62618    31.44072
+         22  |    22.5678   .1838132   122.78   0.000     22.20744    22.92816
+         23  |   26.66473   .3630825    73.44   0.000     25.95292    27.37655
+         24  |   30.76167   .5649071    54.45   0.000     29.65418    31.86916
+         25  |   23.92383   .2753241    86.89   0.000     23.38406     24.4636
+         26  |   27.45686   .4615259    59.49   0.000     26.55204    28.36167
+         27  |   30.98988   .6676207    46.42   0.000     29.68103    32.29874
+         28  |   25.27986   .3721155    67.94   0.000     24.55034    26.00939
+         29  |   28.24898   .5606254    50.39   0.000     27.14989    29.34808
+         30  |    31.2181   .7706854    40.51   0.000     29.70719    32.72902
+         31  |    26.6359   .4709427    56.56   0.000     25.71262    27.55917
+         32  |   29.04111   .6600856    44.00   0.000     27.74702    30.33519
+         33  |   31.44632    .873977    35.98   0.000      29.7329    33.15973
+         34  |   27.99193   .5707491    49.04   0.000     26.87299    29.11087
+         35  |   29.83323   .7597648    39.27   0.000     28.34373    31.32274
+         36  |   31.67454   .9774236    32.41   0.000     29.75831    33.59076
+------------------------------------------------------------------------------
+```
+
+``` stata
+. marginsplot
 ```
